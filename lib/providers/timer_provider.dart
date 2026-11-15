@@ -34,8 +34,9 @@ class TimerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void start(int workMin, int restMin, int longRestMin, int cycles) {
+  Future<void> start(int workMin, int restMin, int longRestMin, int cycles) async {
     if (isRunning) return;
+    await _audioPlayer.stop();
     isRunning = true;
     _endTime = DateTime.now().add(remaining);
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick(workMin, restMin, longRestMin, cycles));
@@ -69,9 +70,11 @@ class TimerProvider extends ChangeNotifier {
   Future<void> _completeSession(int workMin, int restMin, int longRestMin, int cycles) async {
     _timer?.cancel();
     isRunning = false;
-    await _playCompletionFeedback();
 
-    if (currentType == SessionType.work) {
+    final isWorkSession = currentType == SessionType.work;
+    await _playCompletionFeedback(isWorkSession);
+
+    if (isWorkSession) {
       completedPomodoros++;
       currentCycle++;
       await _saveCompletedSession();
@@ -106,12 +109,15 @@ class TimerProvider extends ChangeNotifier {
       tasks[index].pomodoros++;
       selectedTask = tasks[index];
       await prefs.setString('tasks_json', jsonEncode(tasks.map((t) => t.toJson()).toList()));
+      notifyListeners();
     }
   }
 
-  Future<void> _playCompletionFeedback() async {
+  Future<void> _playCompletionFeedback(bool isWorkSession) async {
     try {
-      await _audioPlayer.play(AssetSource('sounds/complete.mp3'));
+      await _audioPlayer.stop();
+      final sound = isWorkSession ? 'sounds/work_complete.mp3' : 'sounds/rest_complete.mp3';
+      await _audioPlayer.play(AssetSource(sound));
     } catch (_) {}
     if (await Vibration.hasVibrator() ?? false) {
       Vibration.vibrate(duration: 500);

@@ -27,4 +27,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/sounds/complete.mp3
+    - assets/sounds/work_complete.mp3
+    - assets/sounds/rest_complete.mp3

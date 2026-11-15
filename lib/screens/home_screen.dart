@@ -21,11 +21,11 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.checklist),
             onPressed: () async {
-              final selected = await Navigator.push(
+              final selected = await Navigator.push<Task>(
                 context,
                 MaterialPageRoute(builder: (_) => const TasksScreen()),
               );
-              if (selected != null) {
+              if (selected != null && context.mounted) {
                 context.read<TimerProvider>().setSelectedTask(selected);
               }
             },
@@ -39,10 +39,17 @@ class HomeScreen extends StatelessWidget {
           children: [
             if (timer.selectedTask != null)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  'Task: ${timer.selectedTask!.name} (${timer.selectedTask!.pomodoros})',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Task: ${timer.selectedTask!.name}  •  ${timer.selectedTask!.pomodoros} pomodoros',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
             Text(

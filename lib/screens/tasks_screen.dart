@@ -1,17 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
-class Task {
-  String name;
-  int pomodoros;
-
-  Task({required this.name, this.pomodoros = 0});
-
-  Map<String, dynamic> toJson() => {'name': name, 'pomodoros': pomodoros};
-  factory Task.fromJson(Map<String, dynamic> json) =>
-      Task(name: json['name'], pomodoros: json['pomodoros'] ?? 0);
-}
+import '../providers/timer_provider.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
